@@ -1,9 +1,6 @@
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { DashboardClient } from "@/components/dashboard-client";
 
-// Mock data for build/Vercel deployment
+// Mock data for demo
 const mockSubscriptionData = {
   daysLeft: 7,
   trialActive: true,
@@ -31,20 +28,18 @@ const mockMetricsData = {
   },
 };
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+const mockUser = {
+  name: "Demo User",
+  email: "demo@example.com",
+  image: null,
+};
 
-  if (!session?.user?.email) {
-    redirect("/auth/signin");
-  }
-
-  // For now, use mock data to allow build
-  // In production with database, fetch real data
+export default function DashboardPage() {
   return (
     <DashboardClient
       subscription={mockSubscriptionData}
       metrics={mockMetricsData}
-      user={session.user}
+      user={mockUser}
     />
   );
 }
