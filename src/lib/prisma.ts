@@ -9,3 +9,8 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// Prevent instantiation during build
+if (process.env.NEXT_PHASE === "phase-production-build") {
+  console.log("Skipping Prisma instantiation during build");
+}

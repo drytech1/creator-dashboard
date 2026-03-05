@@ -1,10 +1,14 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 // This route should be called by a cron job daily
 // It fetches metrics for all active users
 
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
+  // Dynamically import prisma to avoid build-time issues
+  const { prisma } = await import("@/lib/prisma");
+
   // Verify cron secret to prevent unauthorized access
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
