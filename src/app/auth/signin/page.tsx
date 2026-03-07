@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Youtube, Instagram } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function SignIn() {
   return (
@@ -16,10 +17,10 @@ export default function SignIn() {
           <Button 
             variant="outline" 
             className="w-full flex items-center justify-center gap-2 h-12"
-            disabled
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           >
             <Youtube className="h-5 w-5 text-red-600" />
-            Continue with YouTube (Coming Soon)
+            Continue with YouTube
           </Button>
 
           <div className="relative">
@@ -41,9 +42,9 @@ export default function SignIn() {
           </Button>
 
           <p className="text-xs text-center text-muted-foreground mt-4">
-            OAuth integration coming soon.
-            <br />
             7-day free trial, then $10/month.
+            <br />
+            No credit card required.
           </p>
         </CardContent>
       </Card>
