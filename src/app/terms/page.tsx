@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BarChart3, FileText, ArrowLeft } from "lucide-react";
 
+export const dynamic = 'force-static';
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
