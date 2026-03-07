@@ -22,6 +22,7 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
+      // @ts-ignore - extending session with access token
       session.accessToken = token.accessToken;
       return session;
     },
