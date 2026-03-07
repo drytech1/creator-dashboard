@@ -28,6 +28,7 @@ export default function PrivacyPage() {
         <div className="flex items-center gap-3 mb-8">
           <Shield className="h-8 w-8 text-blue-600" />
           <h1 className="text-3xl font-bold">Privacy Policy</h1>
+        <p className="text-sm text-gray-500 mt-2">Last updated: March 7, 2026</p>
         </div>
 
         <div className="prose prose-slate max-w-none">
