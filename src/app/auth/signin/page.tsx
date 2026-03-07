@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Youtube, Instagram } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-// OAuth enabled - v2
+// OAuth enabled - v3 (YouTube + Instagram)
 export default function SignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -38,10 +38,10 @@ export default function SignIn() {
           <Button 
             variant="outline" 
             className="w-full flex items-center justify-center gap-2 h-12"
-            disabled
+            onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })}
           >
             <Instagram className="h-5 w-5 text-pink-600" />
-            Continue with Instagram (Coming Soon)
+            Continue with Instagram
           </Button>
 
           <p className="text-xs text-center text-muted-foreground mt-4">
