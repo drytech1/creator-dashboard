@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Youtube, Instagram } from "lucide-react";
 import { signIn } from "next-auth/react";
 
+// OAuth enabled - v2
 export default function SignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
