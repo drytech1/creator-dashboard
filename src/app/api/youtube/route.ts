@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { handler } from "../auth/[...nextauth]/route";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET() {
   try {
     // Get the session to access the OAuth token
-    const session = await getServerSession(handler);
+    const session = await getServerSession(authOptions);
     
     if (!session?.accessToken) {
       return NextResponse.json(
