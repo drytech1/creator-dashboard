@@ -63,9 +63,11 @@ export default function LandingPage() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline">
-                View Demo
-              </Button>
+              <Link href="/demo">
+                <Button size="lg" variant="outline">
+                  View Demo
+                </Button>
+              </Link>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
               7-day free trial • No credit card required • $29/month after
