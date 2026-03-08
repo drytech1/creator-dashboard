@@ -20,10 +20,32 @@ export default function OnboardingPage() {
     facebookPassword: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Save to database
-    setStep(3);
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save");
+      }
+
+      setStep(3);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (step === 3) {
@@ -63,6 +85,12 @@ export default function OnboardingPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={step === 1 ? () => setStep(2) : handleSubmit}>
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              )}
+
               {step === 1 ? (
                 <div className="space-y-4">
                   <div>
@@ -115,8 +143,8 @@ export default function OnboardingPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    Continue to Platform Credentials
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Saving..." : "Continue to Platform Credentials"}
                   </Button>
                 </div>
               ) : (
@@ -203,8 +231,8 @@ export default function OnboardingPage() {
                     >
                       Back
                     </Button>
-                    <Button type="submit" className="flex-1">
-                      Complete Setup
+                    <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                      {isSubmitting ? "Saving..." : "Complete Setup"}
                     </Button>
                   </div>
                 </div>
