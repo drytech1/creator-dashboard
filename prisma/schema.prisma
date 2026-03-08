@@ -6,34 +6,34 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id @default(dbgenerated("gen_random_uuid()"))
   email         String    @unique
   name          String?
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   // Trial & Subscription
   trialStart    DateTime  @default(now())
   trialDays     Int       @default(7)
   subscriptionStatus String @default("trialing") // trialing, active, canceled, expired
   stripeCustomerId   String?
   stripeSubscriptionId String?
-  
+
   // Connections
   accounts      Account[]
   metrics       Metric[]
-  
+
   @@map("users")
 }
 
 model Account {
-  id                String  @id @default(uuid())
+  id                String  @id @default(dbgenerated("gen_random_uuid()"))
   userId            String
   type              String  // oauth, manual
   provider          String  // google, facebook, tiktok
@@ -45,42 +45,42 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  
+
   // Platform-specific data
   platformUsername  String?
   platformId        String?
-  
+
   // For manual entry platforms (like TikTok)
   isManualEntry     Boolean  @default(false)
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
 
 model Metric {
-  id          String   @id @default(uuid())
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
   userId      String
   platform    String   // youtube, instagram, tiktok
   date        DateTime @default(now())
-  
+
   // Common metrics
   followers   Int      @default(0)
   views       Int      @default(0)
-  
+
   // Platform-specific (stored as JSON for flexibility)
   rawData     String?  // JSON string of full API response
-  
+
   // Calculated fields
   followerGrowth Int   @default(0) // difference from previous day
   viewGrowth     Int   @default(0)
-  
+
   // Manual entry flag
   isManualEntry  Boolean @default(false)
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId, platform, date])
   @@map("metrics")
 }
