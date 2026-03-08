@@ -127,7 +127,11 @@ function PlatformCard({
               ? "Enter your TikTok stats manually from Creator Portal"
               : `Link your ${name} account to track metrics`}
           </p>
-          <Button variant="outline" onClick={onConnect} className={platform === "tiktok" ? "border-white text-white hover:bg-white/10" : ""}>
+          <Button
+            variant="outline"
+            onClick={onConnect}
+            className={platform === "tiktok" ? "bg-white text-gray-900 border-white hover:bg-gray-100" : ""}
+          >
             {platform === "tiktok" ? "Add TikTok Stats" : `Connect ${name}`}
           </Button>
         </CardContent>
