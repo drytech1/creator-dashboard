@@ -100,6 +100,11 @@ async function getInstagramData(accessToken: string) {
 
 async function getTikTokData(userId: string) {
   try {
+    // Check if we're in a build/SSG context where DB might not be available
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      return null;
+    }
+
     const metric = await prisma.metric.findFirst({
       where: { userId, platform: "tiktok" },
       orderBy: { date: "desc" }
@@ -152,11 +157,16 @@ export default async function DashboardPage() {
 
   // Fetch TikTok data if user is logged in
   if (session?.user?.email) {
-    const dbUser = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-    if (dbUser) {
-      tiktokData = await getTikTokData(dbUser.id);
+    try {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      });
+      if (dbUser) {
+        tiktokData = await getTikTokData(dbUser.id);
+      }
+    } catch (error) {
+      console.error("Database error:", error);
+      // Continue without TikTok data if DB fails
     }
   }
 
