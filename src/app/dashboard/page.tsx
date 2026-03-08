@@ -1,6 +1,7 @@
 import { DashboardClient } from "@/components/dashboard-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
 
 // Mock subscription data
 const mockSubscriptionData = {
@@ -97,6 +98,33 @@ async function getInstagramData(accessToken: string) {
   }
 }
 
+async function getTikTokData(userId: string) {
+  try {
+    const metric = await prisma.metric.findFirst({
+      where: { userId, platform: "tiktok" },
+      orderBy: { date: "desc" }
+    });
+
+    const account = await prisma.account.findFirst({
+      where: { userId, provider: "tiktok" }
+    });
+
+    if (!metric) return null;
+
+    return {
+      followers: metric.followers,
+      views: metric.views,
+      likes: metric.rawData ? JSON.parse(metric.rawData).likes || 0 : 0,
+      followerGrowth: metric.followerGrowth,
+      viewGrowth: metric.viewGrowth,
+      username: account?.platformUsername || null,
+    };
+  } catch (error) {
+    console.error("Error fetching TikTok data:", error);
+    return null;
+  }
+}
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   
@@ -112,6 +140,7 @@ export default async function DashboardPage() {
   // Fetch data based on provider
   let youtubeData = null;
   let instagramData = null;
+  let tiktokData = null;
 
   if (session?.accessToken) {
     if (provider === "google") {
@@ -121,8 +150,18 @@ export default async function DashboardPage() {
     }
   }
 
-  const totalFollowers = (youtubeData?.followers || 0) + (instagramData?.followers || 0);
-  const totalViews = (youtubeData?.views || 0) + (instagramData?.views || 0);
+  // Fetch TikTok data if user is logged in
+  if (session?.user?.email) {
+    const dbUser = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+    if (dbUser) {
+      tiktokData = await getTikTokData(dbUser.id);
+    }
+  }
+
+  const totalFollowers = (youtubeData?.followers || 0) + (instagramData?.followers || 0) + (tiktokData?.followers || 0);
+  const totalViews = (youtubeData?.views || 0) + (instagramData?.views || 0) + (tiktokData?.views || 0);
 
   const metricsData = {
     totalFollowers,
@@ -131,6 +170,7 @@ export default async function DashboardPage() {
     viewGrowth: 0,
     youtube: youtubeData,
     instagram: instagramData,
+    tiktok: tiktokData,
   };
 
   return (

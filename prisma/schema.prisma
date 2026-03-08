@@ -35,8 +35,8 @@ model User {
 model Account {
   id                String  @id @default(uuid())
   userId            String
-  type              String  // oauth
-  provider          String  // google, facebook
+  type              String  // oauth, manual
+  provider          String  // google, facebook, tiktok
   providerAccountId String
   refresh_token     String?
   access_token      String?
@@ -50,6 +50,9 @@ model Account {
   platformUsername  String?
   platformId        String?
   
+  // For manual entry platforms (like TikTok)
+  isManualEntry     Boolean  @default(false)
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@unique([provider, providerAccountId])
@@ -59,7 +62,7 @@ model Account {
 model Metric {
   id          String   @id @default(uuid())
   userId      String
-  platform    String   // youtube, instagram
+  platform    String   // youtube, instagram, tiktok
   date        DateTime @default(now())
   
   // Common metrics
@@ -72,6 +75,9 @@ model Metric {
   // Calculated fields
   followerGrowth Int   @default(0) // difference from previous day
   viewGrowth     Int   @default(0)
+  
+  // Manual entry flag
+  isManualEntry  Boolean @default(false)
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   

@@ -13,9 +13,11 @@ import {
   Youtube,
   Instagram,
   LogOut,
-  Download,
   FileText,
   Table,
+  Music,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import jsPDF from "jspdf";
@@ -69,12 +71,15 @@ function MetricCard({ title, value, change, icon, platform }: MetricCardProps) {
 }
 
 interface PlatformCardProps {
-  platform: "youtube" | "instagram";
+  platform: "youtube" | "instagram" | "tiktok";
   followers: number;
   views: number;
   followerChange: number;
   viewChange: number;
   isConnected: boolean;
+  username?: string | null;
+  onConnect?: () => void;
+  onDisconnect?: () => void;
 }
 
 function PlatformCard({
@@ -84,28 +89,47 @@ function PlatformCard({
   followerChange,
   viewChange,
   isConnected,
+  username,
+  onConnect,
+  onDisconnect,
 }: PlatformCardProps) {
-  const Icon = platform === "youtube" ? Youtube : Instagram;
-  const name = platform === "youtube" ? "YouTube" : "Instagram";
+  const Icon = platform === "youtube" ? Youtube : platform === "instagram" ? Instagram : Music;
+  const name = platform === "youtube" ? "YouTube" : platform === "instagram" ? "Instagram" : "TikTok";
   const colorClass =
     platform === "youtube"
       ? "bg-red-50 border-red-200"
-      : "bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200";
+      : platform === "instagram"
+      ? "bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200"
+      : "bg-gray-900 border-gray-800 text-white";
+
+  const iconColor =
+    platform === "youtube"
+      ? "text-red-400"
+      : platform === "instagram"
+      ? "text-pink-400"
+      : "text-white";
+
+  const iconColorConnected =
+    platform === "youtube"
+      ? "text-red-600"
+      : platform === "instagram"
+      ? "text-pink-600"
+      : "text-white";
 
   if (!isConnected) {
     return (
       <Card className={`${colorClass} border-dashed`}>
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <Icon
-            className={`h-12 w-12 mb-4 ${
-              platform === "youtube" ? "text-red-400" : "text-pink-400"
-            }`}
-          />
-          <h3 className="font-semibold mb-2">Connect {name}</h3>
-          <p className="text-sm text-muted-foreground text-center mb-4">
-            Link your {name} account to track metrics
+          <Icon className={`h-12 w-12 mb-4 ${iconColor}`} />
+          <h3 className={`font-semibold mb-2 ${platform === "tiktok" ? "text-white" : ""}`}>Connect {name}</h3>
+          <p className={`text-sm text-center mb-4 ${platform === "tiktok" ? "text-gray-300" : "text-muted-foreground"}`}>
+            {platform === "tiktok" 
+              ? "Enter your TikTok stats manually from Creator Portal"
+              : `Link your ${name} account to track metrics`}
           </p>
-          <Button variant="outline">Connect {name}</Button>
+          <Button variant="outline" onClick={onConnect} className={platform === "tiktok" ? "border-white text-white hover:bg-white/10" : ""}>
+            {platform === "tiktok" ? "Add TikTok Stats" : `Connect ${name}`}
+          </Button>
         </CardContent>
       </Card>
     );
@@ -115,19 +139,29 @@ function PlatformCard({
     <Card className={colorClass}>
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <Icon
-            className={`h-5 w-5 ${
-              platform === "youtube" ? "text-red-600" : "text-pink-600"
-            }`}
-          />
-          <CardTitle className="text-lg">{name}</CardTitle>
+          <Icon className={`h-5 w-5 ${iconColorConnected}`} />
+          <CardTitle className={`text-lg ${platform === "tiktok" ? "text-white" : ""}`}>{name}</CardTitle>
         </div>
-        <Badge variant="secondary">Connected</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant={platform === "tiktok" ? "outline" : "secondary"} className={platform === "tiktok" ? "border-white text-white" : ""}>
+            Connected
+          </Badge>
+          {onDisconnect && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 ${platform === "tiktok" ? "text-white hover:bg-white/10" : "text-red-500 hover:text-red-700"}`}
+              onClick={onDisconnect}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-sm text-muted-foreground">Followers</p>
-          <p className="text-2xl font-bold">{followers.toLocaleString()}</p>
+          <p className={`text-sm ${platform === "tiktok" ? "text-gray-300" : "text-muted-foreground"}`}>Followers</p>
+          <p className={`text-2xl font-bold ${platform === "tiktok" ? "text-white" : ""}`}>{followers.toLocaleString()}</p>
           <p
             className={`text-xs ${
               followerChange >= 0 ? "text-green-600" : "text-red-600"
@@ -138,8 +172,8 @@ function PlatformCard({
           </p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Views</p>
-          <p className="text-2xl font-bold">{views.toLocaleString()}</p>
+          <p className={`text-sm ${platform === "tiktok" ? "text-gray-300" : "text-muted-foreground"}`}>Views</p>
+          <p className={`text-2xl font-bold ${platform === "tiktok" ? "text-white" : ""}`}>{views.toLocaleString()}</p>
           <p
             className={`text-xs ${
               viewChange >= 0 ? "text-green-600" : "text-red-600"
@@ -150,6 +184,13 @@ function PlatformCard({
           </p>
         </div>
       </CardContent>
+      {username && (
+        <CardContent className="pt-0">
+          <p className={`text-sm ${platform === "tiktok" ? "text-gray-400" : "text-muted-foreground"}`}>
+            @{username}
+          </p>
+        </CardContent>
+      )}
     </Card>
   );
 }
@@ -179,6 +220,14 @@ interface DashboardClientProps {
       followerGrowth: number;
       viewGrowth: number;
     } | null;
+    tiktok: {
+      followers: number;
+      views: number;
+      likes: number;
+      followerGrowth: number;
+      viewGrowth: number;
+      username: string | null;
+    } | null;
   } | null;
   user: {
     name?: string | null;
@@ -194,6 +243,16 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [showTikTokModal, setShowTikTokModal] = useState(false);
+  const [tiktokForm, setTiktokForm] = useState({
+    username: "",
+    followers: "",
+    views: "",
+    likes: "",
+  });
+  const [isSubmittingTikTok, setIsSubmittingTikTok] = useState(false);
+  const [tiktokConnected, setTiktokConnected] = useState(!!metrics?.tiktok);
+  const [tiktokData, setTiktokData] = useState(metrics?.tiktok);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -267,6 +326,24 @@ export function DashboardClient({
       });
     }
 
+    // TikTok Section
+    if (metrics?.tiktok) {
+      doc.setFontSize(14);
+      doc.text("TikTok", 14, (doc as any).lastAutoTable.finalY + 15);
+
+      autoTable(doc, {
+        startY: (doc as any).lastAutoTable.finalY + 20,
+        head: [["Metric", "Value"]],
+        body: [
+          ["Followers", metrics.tiktok.followers.toLocaleString()],
+          ["Total Views", metrics.tiktok.views.toLocaleString()],
+          ["Total Likes", metrics.tiktok.likes.toLocaleString()],
+        ],
+        theme: "striped",
+        headStyles: { fillColor: [0, 0, 0] },
+      });
+    }
+
     // Footer
     doc.setFontSize(10);
     doc.text("Generated by CreatorDash", 14, 280);
@@ -303,6 +380,14 @@ export function DashboardClient({
       csvContent += `Total Reach,${metrics.instagram.views}\n\n`;
     }
 
+    if (metrics?.tiktok) {
+      csvContent += "TikTok\n";
+      csvContent += "Metric,Value\n";
+      csvContent += `Followers,${metrics.tiktok.followers}\n`;
+      csvContent += `Total Views,${metrics.tiktok.views}\n`;
+      csvContent += `Total Likes,${metrics.tiktok.likes}\n\n`;
+    }
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -311,6 +396,63 @@ export function DashboardClient({
     link.click();
     document.body.removeChild(link);
     setIsExporting(false);
+  };
+
+  const handleTikTokSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingTikTok(true);
+
+    try {
+      const response = await fetch("/api/tiktok", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: tiktokForm.username,
+          followers: parseInt(tiktokForm.followers) || 0,
+          views: parseInt(tiktokForm.views) || 0,
+          likes: parseInt(tiktokForm.likes) || 0,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTiktokConnected(true);
+        setTiktokData({
+          followers: data.metric.followers,
+          views: data.metric.views,
+          likes: parseInt(tiktokForm.likes) || 0,
+          followerGrowth: data.metric.followerGrowth,
+          viewGrowth: data.metric.viewGrowth,
+          username: tiktokForm.username,
+        });
+        setShowTikTokModal(false);
+        setTiktokForm({ username: "", followers: "", views: "", likes: "" });
+      } else {
+        alert("Failed to save TikTok data");
+      }
+    } catch (error) {
+      console.error("Error saving TikTok data:", error);
+      alert("Failed to save TikTok data");
+    } finally {
+      setIsSubmittingTikTok(false);
+    }
+  };
+
+  const handleTikTokDisconnect = async () => {
+    if (!confirm("Are you sure you want to disconnect TikTok?")) return;
+
+    try {
+      const response = await fetch("/api/tiktok", { method: "DELETE" });
+      if (response.ok) {
+        setTiktokConnected(false);
+        setTiktokData(null);
+      } else {
+        alert("Failed to disconnect TikTok");
+      }
+    } catch (error) {
+      console.error("Error disconnecting TikTok:", error);
+      alert("Failed to disconnect TikTok");
+    }
   };
 
   // Calculate percentages for display
@@ -391,7 +533,7 @@ export function DashboardClient({
         </div>
 
         {/* Platform Cards */}
-        <div className="grid gap-4 md:grid-cols-2 mb-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <PlatformCard
             platform="youtube"
             followers={metrics?.youtube?.followers || 0}
@@ -407,6 +549,17 @@ export function DashboardClient({
             followerChange={metrics?.instagram?.followerGrowth || 0}
             viewChange={metrics?.instagram?.viewGrowth || 0}
             isConnected={!!metrics?.instagram}
+          />
+          <PlatformCard
+            platform="tiktok"
+            followers={tiktokData?.followers || 0}
+            views={tiktokData?.views || 0}
+            followerChange={tiktokData?.followerGrowth || 0}
+            viewChange={tiktokData?.viewGrowth || 0}
+            isConnected={tiktokConnected}
+            username={tiktokData?.username}
+            onConnect={() => setShowTikTokModal(true)}
+            onDisconnect={handleTikTokDisconnect}
           />
         </div>
 
@@ -438,6 +591,103 @@ export function DashboardClient({
           </Button>
         </div>
       </main>
+
+      {/* TikTok Modal */}
+      {showTikTokModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Music className="h-5 w-5" />
+                Add TikTok Stats
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleTikTokSubmit} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    TikTok Username
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="@username"
+                    value={tiktokForm.username}
+                    onChange={(e) =>
+                      setTiktokForm({ ...tiktokForm, username: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    Followers
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={tiktokForm.followers}
+                    onChange={(e) =>
+                      setTiktokForm({ ...tiktokForm, followers: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    Total Views
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={tiktokForm.views}
+                    onChange={(e) =>
+                      setTiktokForm({ ...tiktokForm, views: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    Total Likes (optional)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={tiktokForm.likes}
+                    onChange={(e) =>
+                      setTiktokForm({ ...tiktokForm, likes: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Find these stats in your TikTok Creator Portal under Analytics.
+                </p>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setShowTikTokModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={isSubmittingTikTok}
+                  >
+                    {isSubmittingTikTok ? "Saving..." : "Save Stats"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
