@@ -68,7 +68,7 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              7-day free trial • No credit card required • $10/month after
+              7-day free trial • No credit card required • $29/month after
             </p>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function LandingPage() {
                 <div className="text-center">
                   <h3 className="text-xl font-semibold mb-2">Pro</h3>
                   <div className="text-4xl font-bold mb-2">
-                    $10
+                    $29
                     <span className="text-lg font-normal text-muted-foreground">
                       /month
                     </span>

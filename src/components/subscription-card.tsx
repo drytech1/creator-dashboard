@@ -60,7 +60,7 @@ export function SubscriptionCard({
             <CardTitle className="text-lg">Subscription Active</CardTitle>
           </div>
           <Badge variant="default" className="bg-green-600">
-            $10/month
+            $29/month
           </Badge>
         </CardHeader>
         <CardContent>
@@ -112,7 +112,7 @@ export function SubscriptionCard({
             ) : (
               <CreditCard className="mr-2 h-4 w-4" />
             )}
-            Subscribe Now — $10/month
+            Subscribe Now — $29/month
           </Button>
         </CardContent>
       </Card>
@@ -144,7 +144,7 @@ export function SubscriptionCard({
           ) : (
             <CreditCard className="mr-2 h-4 w-4" />
           )}
-          Subscribe — $10/month
+          Subscribe — $29/month
         </Button>
       </CardContent>
     </Card>
