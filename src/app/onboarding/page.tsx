@@ -23,6 +23,16 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const handleSubmitStep1 = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.phone) {
+      setError("Please fill in all required fields");
+      return;
+    }
+    setError("");
+    setStep(2);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -35,14 +45,16 @@ export default function OnboardingPage() {
         body: JSON.stringify(formData),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save");
+        throw new Error(data.error || `Server error: ${res.status}`);
       }
 
       setStep(3);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      console.error("Form submission error:", err);
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +96,7 @@ export default function OnboardingPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={step === 1 ? () => setStep(2) : handleSubmit}>
+            <form onSubmit={step === 1 ? handleSubmitStep1 : handleSubmit}>
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
                   <p className="text-sm text-red-700">{error}</p>
