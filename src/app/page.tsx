@@ -5,6 +5,7 @@ import {
   BarChart3,
   Youtube,
   Instagram,
+  Music,
   TrendingUp,
   Zap,
   Shield,
@@ -45,7 +46,7 @@ export default function LandingPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <Badge className="mb-6" variant="secondary">
-              🚀 Now with Instagram & YouTube
+              🚀 Now with YouTube, Instagram & TikTok
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               Track Your Growth Across
@@ -172,7 +173,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <PlatformCard
               icon={<Youtube className="h-8 w-8 text-red-600" />}
               name="YouTube"
@@ -196,6 +197,18 @@ export default function LandingPage() {
                 "Engagement rate",
               ]}
               color="pink"
+            />
+            <PlatformCard
+              icon={<Music className="h-8 w-8 text-gray-900" />}
+              name="TikTok"
+              description="Track followers, video views, likes, and trending content performance."
+              features={[
+                "Follower count",
+                "Video views",
+                "Total likes",
+                "Manual entry",
+              ]}
+              color="gray"
             />
           </div>
         </div>
@@ -226,7 +239,7 @@ export default function LandingPage() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      YouTube & Instagram tracking
+                      YouTube, Instagram & TikTok tracking
                     </li>
                     <li className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-yellow-500" />
