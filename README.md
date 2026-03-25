@@ -1,198 +1,157 @@
-# CreatorDash
+# 🚀 Creator Dashboard
 
-A unified analytics dashboard for content creators. Track your growth across YouTube, Instagram, and more platforms in one place.
+A unified analytics dashboard for social media content creators. Track your YouTube and Instagram growth in one place.
 
-## ✨ Features
+## Features
 
-- **🌐 Web UI** - Professional home page with privacy policy and terms
-- **📺 YouTube Integration** - Subscribers, views, videos, recent performance
-- **📸 Instagram Integration** - Followers, posts, reach, impressions
-- **📈 Historical Tracking** - Daily snapshots with growth analytics
-- **📊 Multi-Platform Reports** - Combined view of all your channels
-- **🗄️ Local Database** - SQLite for fast, private data storage
-- **⏰ Automated Fetching** - Daily cron jobs keep data up to date
-- **🚀 Social Media Posting** - Post to YouTube, Instagram from one interface
-- **📅 Content Scheduling** - Schedule posts for optimal timing
-- **📝 Post Templates** - Reusable content templates
+- 📊 **Unified Dashboard** — View all your metrics in one place
+- 📺 **YouTube Integration** — Track subscribers, views, and growth
+- 📸 **Instagram Integration** — Monitor followers and engagement
+- 💳 **Subscriptions** — 7-day free trial, then $10/month
+- 📈 **Daily Metrics** — Automatic daily data fetching
+- 🔐 **Secure OAuth** — Safe authentication with Google and Facebook
 
-## 🚀 Quick Start
+## Tech Stack
+
+- **Framework:** Next.js 16 + React 19
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Database:** SQLite (Prisma ORM)
+- **Auth:** NextAuth.js (Google, Facebook)
+- **Payments:** Stripe
+- **Cron:** OpenClaw / External
+
+## Quick Start
+
+### 1. Clone and Install
 
 ```bash
-# Install dependencies
+git clone https://github.com/YOUR_USERNAME/creator-dashboard.git
+cd creator-dashboard
 npm install
-
-# Start the web server (optional)
-npm start
-# Visit: http://localhost:3000
-
-# Initialize database
-npm run db:init
-
-# Add posting capabilities (optional)
-npm run db:migrate:posting
-
-# Fetch YouTube metrics
-npm run fetch
-
-# Generate report
-npm run report
-
-# Post to social media
-npm run post:youtube -- --file video.mp4 --title "My Video"
-npm run post:instagram -- --image photo.jpg --caption "My Post"
 ```
 
-See [WEB_UI.md](WEB_UI.md) for web server documentation.
-
-## 📋 Available Commands
-
-### Database
-```bash
-npm run db:init                    # Initialize database
-npm run db:migrate:instagram       # Add Instagram support
-npm run db:migrate:posting         # Add posting capabilities
-```
-
-### Fetching Data
-```bash
-npm run fetch                      # Fetch YouTube metrics
-npm run fetch:dry                  # Test YouTube fetch (no save)
-npm run fetch:instagram            # Fetch Instagram metrics
-npm run fetch:instagram:dry        # Test Instagram fetch
-npm run fetch:all                  # Fetch all platforms
-```
-
-### Reports
-```bash
-npm run report                     # Full multi-platform report
-npm run report:weekly              # Include weekly summary
-npm run report:monthly             # Include monthly summary
-```
-
-### Social Media Posting
-```bash
-# Unified posting
-npm run post -- --platforms youtube,instagram --file video.mp4 --title "Title"
-
-# Platform-specific
-npm run post:youtube -- --file video.mp4 --title "My Video"
-npm run post:youtube -- --short short.mp4 --title "My Short"
-npm run post:instagram -- --image photo.jpg --caption "My Caption"
-npm run post:instagram -- --reel reel.mp4 --caption "My Reel"
-npm run post:instagram -- --carousel img1.jpg,img2.jpg --caption "Carousel"
-npm run post:instagram -- --story story.jpg
-
-# Scheduling
-npm run post:list                  # List scheduled posts
-npm run post:scheduled             # Process due scheduled posts
-```
-
-See [POSTING.md](POSTING.md) for detailed posting documentation.
-
-## 🔧 Configuration
-
-### YouTube Setup
-
-Already configured! Uses your existing API key.
-
-### Instagram Setup
-
-See [INSTAGRAM_SETUP.md](INSTAGRAM_SETUP.md) for detailed instructions.
-
-Quick steps:
-1. Get access token from [Facebook Developers](https://developers.facebook.com/tools/explorer/)
-2. Add to `.env.local`:
-   ```
-   INSTAGRAM_ACCESS_TOKEN=your_token_here
-   INSTAGRAM_USER_ID=your_user_id
-   INSTAGRAM_USERNAME=your_username
-   ```
-
-## 📊 Database Schema
-
-### Tables
-- `channel_metrics` - YouTube daily snapshots
-- `video_metrics` - Individual YouTube video stats
-- `growth_metrics` - YouTube calculated growth
-- `instagram_metrics` - Instagram daily snapshots
-- `instagram_media` - Individual Instagram posts
-- `instagram_growth` - Instagram calculated growth
-
-### Views
-- `v_daily_summary` - Combined daily metrics
-
-## ⏰ Automated Fetching
-
-A cron job is configured to run daily at 9:00 AM CST:
+### 2. Environment Setup
 
 ```bash
-# Check cron status
-openclaw cron list
-
-# Job ID: c5e8ca2a-4d1a-410f-a51e-cb2ebe75ed1e
+cp .env.example .env.local
+# Edit .env.local with your keys
 ```
 
-## 📁 Project Structure
+Required variables:
+- `DATABASE_URL` — SQLite file path
+- `NEXTAUTH_SECRET` — Random string (generate: `openssl rand -base64 32`)
+- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` — For YouTube OAuth
+- `FACEBOOK_APP_ID` & `FACEBOOK_APP_SECRET` — For Instagram OAuth
+- `STRIPE_SECRET_KEY` & `STRIPE_PRICE_ID` — For payments
+- `CRON_SECRET` — For cron job security
+
+### 3. Database Setup
+
+```bash
+npx prisma migrate dev
+```
+
+### 4. Run Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+## Documentation
+
+- [OAuth Setup](./OAUTH_SETUP.md) — Configure YouTube and Instagram login
+- [Stripe Setup](./STRIPE_SETUP.md) — Set up payments
+- [Cron Setup](./CRON_SETUP.md) — Configure daily metric fetching
+- [Deployment Guide](./DEPLOYMENT.md) — Deploy to production
+
+## Project Structure
 
 ```
 creator-dashboard/
-├── data/
-│   ├── creatordash.db          # SQLite database
-│   └── fetch.log               # Execution logs
+├── src/
+│   ├── app/                 # Next.js app router
+│   │   ├── api/            # API routes
+│   │   │   ├── auth/       # NextAuth configuration
+│   │   │   ├── cron/       # Cron job endpoints
+│   │   │   ├── stripe/     # Stripe webhooks
+│   │   │   ├── youtube/    # YouTube API
+│   │   │   └── instagram/  # Instagram API
+│   │   ├── auth/signin/    # Sign-in page
+│   │   ├── dashboard/      # Dashboard page
+│   │   └── page.tsx        # Landing page
+│   ├── components/         # React components
+│   │   ├── ui/            # shadcn/ui components
+│   │   ├── dashboard-client.tsx
+│   │   └── subscription-card.tsx
+│   └── lib/               # Utilities
+│       ├── prisma.ts      # Database client
+│       └── stripe.ts      # Stripe helpers
+├── prisma/
+│   └── schema.prisma      # Database schema
 ├── scripts/
-│   ├── db-init.mjs             # Database initialization
-│   ├── db-migrate-instagram.mjs # Instagram migration
-│   ├── fetch-and-save.mjs      # YouTube fetcher
-│   ├── fetch-instagram.mjs     # Instagram fetcher
-│   ├── generate-full-report.mjs # Multi-platform reports
-│   └── daily-cron.sh           # Cron execution script
-├── .env.local                  # Configuration
-├── CRON_SETUP.md              # Cron documentation
-├── INSTAGRAM_SETUP.md         # Instagram setup guide
-└── package.json
+│   └── fetch-metrics.ts   # Manual metric fetch
+└── docs/
+    ├── OAUTH_SETUP.md
+    ├── STRIPE_SETUP.md
+    ├── CRON_SETUP.md
+    └── DEPLOYMENT.md
 ```
 
-## 📈 Growth Analytics
+## API Routes
 
-The system tracks:
-- **Daily Growth** - Day-over-day changes
-- **Week-over-Week** - 7-day comparisons
-- **Month-over-Month** - 30-day comparisons
-- **Milestones** - All-time highs and tracking duration
+| Route | Description |
+|-------|-------------|
+| `POST /api/auth/signin/google` | Sign in with YouTube |
+| `POST /api/auth/signin/facebook` | Sign in with Instagram |
+| `GET /api/youtube` | Fetch YouTube stats |
+| `GET /api/instagram` | Fetch Instagram stats |
+| `POST /api/stripe/checkout` | Create checkout session |
+| `POST /api/stripe/portal` | Customer portal |
+| `POST /api/stripe/webhook` | Stripe webhooks |
+| `POST /api/cron/fetch-metrics` | Daily metric fetch |
 
-## 🔒 Privacy
+## Scripts
 
-All data is stored locally in SQLite. No cloud services, no third-party analytics.
+```bash
+# Development
+npm run dev
 
-## 🛠️ Troubleshooting
+# Build
+npm run build
 
-**Database locked**
-→ Wait a moment and try again
+# Manual metric fetch
+npm run fetch-metrics
 
-**API rate limits**
-→ YouTube: 10,000 quota units/day (plenty for daily fetching)
-→ Instagram: 200 calls/hour/user
+# Database
+npm run db:migrate    # Run migrations
+npm run db:studio     # Open Prisma Studio
+```
 
-**Missing data**
-→ Check `.env.local` configuration
-→ Verify API tokens are valid
+## Monetization
 
-## 📝 Roadmap
+- **Free Trial:** 7 days full access
+- **Price:** $10/month subscription
+- **Payment:** Stripe Checkout + Customer Portal
 
-- [x] YouTube integration
-- [x] Historical tracking
-- [x] Growth analytics
-- [x] Instagram integration
-- [x] YouTube posting
-- [x] Instagram posting
-- [x] Content scheduling
+## Roadmap
+
 - [ ] TikTok integration
 - [ ] Twitter/X integration
-- [ ] Web dashboard UI
-- [ ] Export to CSV/Excel
-- [ ] Email reports
-- [ ] Competitor tracking
+- [ ] Analytics charts and graphs
+- [ ] Export to PDF/CSV
+- [ ] Team/Agency features
+- [ ] White-label option
 
-## 📄 License
+## License
 
-Private - For Shon Jimenez use only
+MIT
+
+## Support
+
+For questions or issues, open a GitHub issue or contact support.
+
+---
+
+Built with ❤️ for content creators

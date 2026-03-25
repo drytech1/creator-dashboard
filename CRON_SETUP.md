@@ -1,52 +1,93 @@
-# CreatorDash Cron Setup
+# Cron Job Setup
 
-## Automated Daily Fetching
+## Option 1: OpenClaw Cron (Recommended)
 
-Your CreatorDash is now configured to automatically fetch YouTube metrics daily at **9:00 AM CST**.
-
-### How It Works
-
-1. **Cron Job**: `CreatorDash Daily Metrics` runs every day at 9:00 AM
-2. **System Event**: Triggers a reminder in the main session
-3. **Execution**: When the event fires, run the fetch command
-
-### Manual Commands
+Add a daily cron job using OpenClaw's built-in scheduler:
 
 ```bash
-# Fetch today's metrics and save to database
-npm run fetch
+# Generate a cron secret first
+openssl rand -hex 32
 
-# Generate growth report
-npm run report
+# Add to your .env.local
+CRON_SECRET=your_generated_secret
 
-# View weekly summary
-npm run report -- --weekly
+# Create the cron job (run this from your OpenClaw workspace)
+openclaw cron add \
+  --name "Fetch Creator Metrics" \
+  --cron "0 6 * * *" \
+  --tz "America/Chicago" \
+  --url "https://yourdomain.com/api/cron/fetch-metrics" \
+  --headers "Authorization:Bearer your_cron_secret"
 ```
 
-### Cron Job Details
+This will run every day at 6:00 AM CT.
 
-- **Name**: CreatorDash Daily Metrics
-- **Schedule**: Every day at 9:00 AM CST
-- **Job ID**: c5e8ca2a-4d1a-410f-a51e-cb2ebe75ed1e
-- **Status**: Active
+## Option 2: Vercel Cron (if deploying to Vercel)
 
-### Next Run
+Add to your `vercel.json`:
 
-Check with: `openclaw cron list`
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/fetch-metrics",
+      "schedule": "0 6 * * *"
+    }
+  ]
+}
+```
 
-### Data Storage
+Note: You'll need to handle the CRON_SECRET verification in the route.
 
-- **Database**: `/root/.openclaw/workspace/creator-dashboard/data/creatordash.db`
-- **Logs**: `/root/.openclaw/workspace/creator-dashboard/data/fetch.log`
+## Option 3: External Cron Service
 
-### To Disable
+Use a service like:
+- [Cron-job.org](https://cron-job.org) (free)
+- [EasyCron](https://www.easycron.com)
+- [UptimeRobot](https://uptimerobot.com)
+
+Set up a daily POST request to:
+```
+POST https://yourdomain.com/api/cron/fetch-metrics
+Headers:
+  Authorization: Bearer your_cron_secret
+```
+
+## Manual Testing
+
+Test the cron endpoint locally:
 
 ```bash
-openclaw cron disable c5e8ca2a-4d1a-410f-a51e-cb2ebe75ed1e
+# Start your dev server
+npm run dev
+
+# In another terminal, test the endpoint
+curl -X POST http://localhost:3000/api/cron/fetch-metrics \
+  -H "Authorization: Bearer your_cron_secret"
 ```
 
-### To Remove
+## What the Cron Job Does
 
+1. Finds all users with active subscriptions or trials
+2. For each user's connected accounts:
+   - Fetches YouTube channel stats (subscribers, views)
+   - Fetches Instagram Business account stats (followers, engagement)
+3. Calculates daily growth (compared to yesterday)
+4. Saves metrics to the database
+5. Returns summary of processed users
+
+## Monitoring
+
+Check the cron job status:
 ```bash
-openclaw cron rm c5e8ca2a-4d1a-410f-a51e-cb2ebe75ed1e
+openclaw cron list
+openclaw cron runs "Fetch Creator Metrics"
 ```
+
+## Troubleshooting
+
+If metrics aren't updating:
+1. Check that users have connected their accounts
+2. Verify OAuth tokens haven't expired (may need refresh logic)
+3. Check the cron job logs: `openclaw cron runs "Fetch Creator Metrics"`
+4. Test manually with the curl command above

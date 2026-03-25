@@ -1,0 +1,63 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Youtube, Instagram, ArrowLeft } from "lucide-react";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+
+// OAuth enabled - v3 (YouTube + Instagram)
+export default function SignIn() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <Link href="/">
+            <Button variant="ghost" className="absolute left-4 top-4 gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+          </Link>
+          <CardTitle className="text-2xl">Welcome to Creator Dashboard</CardTitle>
+          <p className="text-muted-foreground mt-2">
+            Connect your accounts to start tracking
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2 h-12"
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          >
+            <Youtube className="h-5 w-5 text-red-600" />
+            Continue with YouTube
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2 h-12"
+            onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })}
+          >
+            <Instagram className="h-5 w-5 text-pink-600" />
+            Continue with Instagram
+          </Button>
+
+          <p className="text-xs text-center text-muted-foreground mt-4">
+            7-day free trial, then $10/month.
+            <br />
+            No credit card required.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
