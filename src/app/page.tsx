@@ -349,13 +349,13 @@ export default function LandingPage() {
               <h4 className="font-semibold text-white mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="#features">Features</Link>
+                  <Link href="/#features">Features</Link>
                 </li>
                 <li>
-                  <Link href="#pricing">Pricing</Link>
+                  <Link href="/#pricing">Pricing</Link>
                 </li>
                 <li>
-                  <Link href="#">Changelog</Link>
+                  <Link href="mailto:support@creatordash.app">Changelog</Link>
                 </li>
               </ul>
             </div>
@@ -363,13 +363,13 @@ export default function LandingPage() {
               <h4 className="font-semibold text-white mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="#">Help Center</Link>
+                  <Link href="mailto:support@creatordash.app">Help Center</Link>
                 </li>
                 <li>
-                  <Link href="#">Contact</Link>
+                  <Link href="mailto:support@creatordash.app">Contact</Link>
                 </li>
                 <li>
-                  <Link href="#">Status</Link>
+                  <Link href="https://status.creatordash.app" target="_blank">Status</Link>
                 </li>
               </ul>
             </div>
@@ -377,10 +377,10 @@ export default function LandingPage() {
               <h4 className="font-semibold text-white mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="#">Privacy Policy</Link>
+                  <Link href="/privacy">Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link href="#">Terms of Service</Link>
+                  <Link href="/terms">Terms of Service</Link>
                 </li>
               </ul>
             </div>
